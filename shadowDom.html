@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shadow Dom</title>
+  </head>
+  <body>
+    <h1>Mamun</h1>
+    <p>This is a paragraph</p>
+    <user-card></user-card>
+    <script>
+      class UserCard extends HTMLElement {
+        constructor() {
+          super();
+          const shadow = this.attachShadow({ mode: "open" });
+          shadow.innerHTML = `
+                <style>
+                .card {
+                    border: 1px solid #ccc;
+                    padding: 16px;
+                    border-radius: 8px;
+                    width: 200px;
+                    text-align: center;
+                }
+                .avatar {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    margin-bottom: 8px;
+                }
+                </style>
+                <div class="card">
+                <img class="avatar" src="https://placehold.co/80x80.png?text=Avatar" alt="User Avatar">
+                <h2>John Doe</h2>
+                <p>Web Developer</p>
+                </div>
+            `;
+        }
+      }
+
+      customElements.define("user-card", UserCard);
+    </script>
+  </body>
+</html>

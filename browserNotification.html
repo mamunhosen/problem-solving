@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Browser Notification</h1>
+    <button id="notifyBtn">Show Notification</button>
+    <script>
+      // select button
+      const button = document.querySelector("#notifyBtn");
+
+      // Helper to send notification
+      async function sendNotification() {
+        await new Notification("Hello!", {
+          body: "This is a browser notification 🚀",
+          icon: "https://placehold.co/100x100.png?text=Icon",
+        });
+      }
+
+      // Click handler
+      button.addEventListener("click", async () => {
+        // Check if browser supports Notification API
+        if (!("Notification" in window)) {
+          console.error("This browser does not support notifications.");
+          return;
+        }
+
+        // If already granted → send immediately
+        if (Notification.permission === "granted") {
+          console.log("Notification permission already granted.");
+          await sendNotification();
+          return;
+        }
+
+        // If not denied → request permission
+        if (Notification.permission !== "denied") {
+          const permission = await Notification.requestPermission();
+
+          if (permission === "granted") {
+            await sendNotification();
+          } else {
+            console.warn("Notification permission denied.");
+          }
+        } else {
+          console.warn("Notifications are blocked by the user.");
+        }
+      });
+    </script>
+  </body>
+</html>

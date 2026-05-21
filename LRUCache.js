@@ -1,8 +1,11 @@
 class Cache {
+  #cache;
+  #limit;
+  #timer;
   constructor(limit) {
-    this.cache = new Map();
-    this.limit = limit;
-    this.timer = setInterval(() => {
+    this.#cache = new Map();
+    this.#limit = limit;
+    this.#timer = setInterval(() => {
       this.#clearExpiredEntries();
     }, 1000);
   }
@@ -11,43 +14,43 @@ class Cache {
     const now = Date.now();
     const entry = { value, expiry: now + ttl };
 
-    if (this.cache.has(key)) {
-      this.cache.delete(key);
+    if (this.#cache.has(key)) {
+      this.#cache.delete(key);
     }
 
     // remove expired entries
     this.#clearExpiredEntries();
 
-    // envict LRU
-    if (this.cache.size === this.limit) {
-      this.#envictLRU();
+    // evict LRU
+    if (this.#cache.size === this.#limit) {
+      this.#evictLRU();
     }
 
     // add new entry
-    this.cache.set(key, entry);
+    this.#cache.set(key, entry);
   }
 
   get(key) {
-    const entry = this.cache.get(key);
+    const entry = this.#cache.get(key);
     if (!entry) return null;
 
     if (this.#isExpired(entry)) {
-      this.cache.delete(key);
+      this.#cache.delete(key);
       return null;
     }
 
     // Refresh usage
-    this.cache.delete(key);
-    this.cache.set(key, entry);
+    this.#cache.delete(key);
+    this.#cache.set(key, entry);
 
     return entry.value;
   }
 
   #clearExpiredEntries() {
     const now = Date.now();
-    for (let [key, entry] of this.cache) {
+    for (let [key, entry] of this.#cache) {
       if (now > entry.expiry) {
-        this.cache.delete(key);
+        this.#cache.delete(key);
       }
     }
   }
@@ -56,17 +59,17 @@ class Cache {
     return Date.now() > entry.expiry;
   }
 
-  #envictLRU() {
-    const key = this.cache.keys().next().value;
-    this.cache.delete(key);
+  #evictLRU() {
+    const key = this.#cache.keys().next().value;
+    this.#cache.delete(key);
   }
 
   clearTimer() {
-    clearInterval(this.timer);
+    clearInterval(this.#timer);
   }
 
   print() {
-    for (let [key, entry] of this.cache) {
+    for (let [key, entry] of this.#cache) {
       console.log(key, entry);
     }
   }
